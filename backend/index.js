@@ -10,50 +10,7 @@ import { app, server } from "./socket/socket.js";
 import path from "path";
  
 dotenv.config();
-const bodyParser = require('body-parser');
-// Middleware
-app.use(cors());
-app.use(bodyParser.json); // Setting limit to 200MB for JSON bodies
-app.use(bodyParser.urlencoded({extended: true })); // Same limit for URL-encoded data
-app.use(Express.json());
-app.get('https://socialmedia-app-n6xo.onrender.com/api/v1/search', async (req, res) => {
-    const { query } = req.query;
 
-    if (!query) {
-        return res.status(400).json({ message: "Search query is required" });
-    }
-
-    try {
-        // Search users by matching either the username or full name
-        const users = await database.collection("user").find({
-            $or: [
-                { username: { $regex: query, $options: 'i' } }, // Case-insensitive regex for username
-                { fullName: { $regex: query, $options: 'i' } }  // Case-insensitive regex for full name
-            ]
-        }).toArray();  // Convert the cursor to an array
-
-        if (users.length === 0) {
-            return res.status(404).json({ message: "No users found" });
-        }
-
-        // Return the found users (excluding sensitive info like passwords)
-        const result = users.map(user => ({
-            id: user._id,
-            username: user.username,
-            fullName: user.fullName,
-            bio: user.bio,
-            gender: user.gender,
-            dateOfBirth: user.dateOfBirth,
-            profile_pic: user.profile_pic,
-            accountPrivacy: user.accountPrivacy
-        }));
-        console.log(result);
-
-        res.json({ users: result });
-    } catch (error) {
-        res.status(500).json({ message: "Error searching for users", error });
-    }
-});
 
 const PORT = process.env.PORT || 3000;
 
@@ -73,7 +30,6 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
-app.use("/api/v1/search");
 
 
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
