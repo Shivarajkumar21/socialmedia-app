@@ -10,10 +10,11 @@ import { app, server } from "./socket/socket.js";
 import path from "path";
  
 dotenv.config();
+const bodyParser = require('body-parser');
 // Middleware
 app.use(cors());
-app.use(bodyParser.json({ limit: '200mb' })); // Setting limit to 200MB for JSON bodies
-app.use(bodyParser.urlencoded({ limit: '200mb', extended: true })); // Same limit for URL-encoded data
+app.use(bodyParser.json); // Setting limit to 200MB for JSON bodies
+app.use(bodyParser.urlencoded({extended: true })); // Same limit for URL-encoded data
 app.use(Express.json());
 app.get('https://socialmedia-app-n6xo.onrender.com/api/v1/search', async (req, res) => {
     const { query } = req.query;
